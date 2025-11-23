@@ -13,11 +13,12 @@ namespace SchoolManagementSystem.Models
         public string LastName { get; set; }           
         public string StudentNumber { get; set; }      
         public DateTime BirthDate { get; set; }        
-        public string Major { get; set; }              
+        public string Major { get; set; }
 
+        public string FullName => $"{FirstName} {LastName}";
         public override string ToString()
         {
-            return $"{Id} - {FirstName} {LastName} - ({StudentNumber})";
+            return $"{Id} - {FullName} ({StudentNumber})";
         }
     }
 }
