@@ -72,11 +72,9 @@ namespace SchoolManagementSystem.Menus
             Console.Write("Last Name: ");
             string lastName = Console.ReadLine()!;
 
-            Console.Write("Student Number: ");
-            string studentNumber = Console.ReadLine()!;
+            string studentNumber = ReadNumeric("Student Number: ");
 
-            Console.Write("Birth Date (yyyy-mm-dd): ");
-            DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
+            DateTime birthDate = ReadDate("Birth Date (yyyy-mm-dd): ");
 
             Console.Write("Major: ");
             string major = Console.ReadLine()!;
@@ -114,11 +112,9 @@ namespace SchoolManagementSystem.Menus
             Console.Write("New Last Name: ");
             string lastName = Console.ReadLine()!;
 
-            Console.Write("New Student Number: ");
-            string studentNumber = Console.ReadLine()!;
+            string studentNumber = ReadNumeric("New Student Number: ");
 
-            Console.Write("New Birth Date (yyyy-mm-dd): ");
-            DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
+            DateTime birthDate = ReadDate("New Birth Date (yyyy-mm-dd): ");
 
             Console.Write("New Major: ");
             string major = Console.ReadLine()!;
@@ -165,11 +161,42 @@ namespace SchoolManagementSystem.Menus
             {
                 foreach (var student in students)
                 {
-                    Console.WriteLine(student);
+                    Console.WriteLine(student.FullInfo());
+                    Console.WriteLine("-----------------------------");
                 }
+
             }
 
             Console.ReadKey();
         }
+
+        private string ReadNumeric(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input) && input.All(char.IsDigit))
+                    return input;
+
+                Console.WriteLine("❌ Only numbers are allowed!");
+            }
+        }
+
+        private DateTime ReadDate(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+                string? input = Console.ReadLine();
+
+                if (DateTime.TryParse(input, out DateTime date))
+                    return date;
+
+                Console.WriteLine("❌ Invalid date format! (Use yyyy-mm-dd)");
+            }
+        }
+
     }
 }
