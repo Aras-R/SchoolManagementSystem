@@ -20,5 +20,14 @@ namespace SchoolManagementSystem.Models
         {
             return $"{Id} - {FullName} ({TeacherCode})";
         }
+        public string FullInfo()
+        {
+            return
+                $"ID: {Id}\n" +
+                $"Name: {FullName}\n" +
+                $"Teacher Code: {TeacherCode}\n" +
+                $"College: {College}\n";
+        }
+
     }
 }

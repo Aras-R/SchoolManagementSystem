@@ -5,7 +5,6 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        // دیتابیس در حافظه (Fake Database)
         DataContext context = new DataContext();
 
         while (true)
@@ -23,13 +22,13 @@ internal class Program
             switch (choice)
             {
                 case "1":
-                    var stuMenu = new StudentMenu(context);
-                    stuMenu.Show();
+                    var studentMenu = new StudentMenu(context);
+                    studentMenu.Show();
                     break;
 
                 case "2":
-                    Console.WriteLine("Teacher management will be added soon.");
-                    Console.ReadKey();
+                    var teacherMenu = new TeacherMenu(context);
+                    teacherMenu.Show();
                     break;
 
                 case "3":
