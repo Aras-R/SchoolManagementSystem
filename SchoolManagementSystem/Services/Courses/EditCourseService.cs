@@ -31,4 +31,5 @@ namespace SchoolManagementSystem.Services.Courses
 
             return true;
         }
+    }
 }

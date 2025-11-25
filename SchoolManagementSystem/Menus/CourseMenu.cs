@@ -1,16 +1,12 @@
 ﻿using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Services.Courses;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolManagementSystem.Menus
 {
     public class CourseMenu
     {
-
         private readonly DataContext _context;
 
         public CourseMenu(DataContext context)
@@ -28,6 +24,8 @@ namespace SchoolManagementSystem.Menus
                 Console.WriteLine("2) Add Student to Course");
                 Console.WriteLine("3) Assign Grade to Student");
                 Console.WriteLine("4) List Courses with Students and Grades");
+                Console.WriteLine("5) Edit Course");
+                Console.WriteLine("6) Delete Course");
                 Console.WriteLine("0) Back");
                 Console.Write("Choose: ");
 
@@ -35,24 +33,13 @@ namespace SchoolManagementSystem.Menus
 
                 switch (input)
                 {
-                    case "1":
-                        AddCourse();
-                        break;
-
-                    case "2":
-                        AddStudentToCourse();
-                        break;
-
-                    case "3":
-                        AssignGrade();
-                        break;
-
-                    case "4":
-                        ListCourses();
-                        break;
-
-                    case "0":
-                        return;
+                    case "1": AddCourse(); break;
+                    case "2": AddStudentToCourse(); break;
+                    case "3": AssignGrade(); break;
+                    case "4": ListCourses(); break;
+                    case "5": EditCourse(); break;
+                    case "6": DeleteCourse(); break;
+                    case "0": return;
 
                     default:
                         Console.WriteLine("Invalid input!");
@@ -62,6 +49,7 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        // ------------------------- Add Course -------------------------
         private void AddCourse()
         {
             Console.Clear();
@@ -70,7 +58,6 @@ namespace SchoolManagementSystem.Menus
             Console.Write("Course Title: ");
             string title = Console.ReadLine()!;
 
-            // نمایش استادها
             Console.WriteLine("\nAvailable Teachers:");
             foreach (var t in _context.Teachers)
                 Console.WriteLine($"{t.Id} - {t.FullName}");
@@ -85,6 +72,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // ------------------------- Add Student to Course -------------------------
         private void AddStudentToCourse()
         {
             Console.Clear();
@@ -119,6 +107,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // ------------------------- Assign Grade -------------------------
         private void AssignGrade()
         {
             Console.Clear();
@@ -172,6 +161,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // ------------------------- List Courses -------------------------
         private void ListCourses()
         {
             Console.Clear();
@@ -211,6 +201,76 @@ namespace SchoolManagementSystem.Menus
 
                 Console.WriteLine("-----------------------------");
             }
+
+            Console.ReadKey();
+        }
+
+        // ------------------------- Edit Course -------------------------
+        private void EditCourse()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Edit Course ===");
+
+            Console.WriteLine("Available Courses:");
+            foreach (var c in _context.Courses)
+                Console.WriteLine($"{c.Id} - {c.Title}");
+
+            Console.Write("\nEnter Course Id: ");
+            int courseId = int.Parse(Console.ReadLine()!);
+
+            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+
+            if (course == null)
+            {
+                Console.WriteLine("Course not found!");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("New Course Title: ");
+            string newTitle = Console.ReadLine()!;
+
+            Console.WriteLine("\nAvailable Teachers:");
+            foreach (var t in _context.Teachers)
+                Console.WriteLine($"{t.Id} - {t.FullName}");
+
+            Console.Write("\nEnter New Teacher Id: ");
+            int newTeacherId = int.Parse(Console.ReadLine()!);
+
+            var service = new EditCourseService(_context);
+
+            try
+            {
+                service.Edit(courseId, newTitle, newTeacherId);
+                Console.WriteLine("\nCourse updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nError: {ex.Message}");
+            }
+
+            Console.ReadKey();
+        }
+
+        // ------------------------- Delete Course -------------------------
+        private void DeleteCourse()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Delete Course ===");
+
+            Console.WriteLine("Available Courses:");
+            foreach (var c in _context.Courses)
+                Console.WriteLine($"{c.Id} - {c.Title}");
+
+            Console.Write("\nEnter Course Id: ");
+            int courseId = int.Parse(Console.ReadLine()!);
+
+            var service = new DeleteCourseService(_context);
+            bool result = service.Delete(courseId);
+
+            Console.WriteLine(result
+                ? "\nCourse deleted successfully!"
+                : "\nCourse not found!");
 
             Console.ReadKey();
         }
