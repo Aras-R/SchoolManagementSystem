@@ -32,8 +32,8 @@ internal class Program
                     break;
 
                 case "3":
-                    Console.WriteLine("Course management will be added soon.");
-                    Console.ReadKey();
+                    var courseMenu = new CourseMenu(context);
+                    courseMenu.Show();
                     break;
 
                 case "0":

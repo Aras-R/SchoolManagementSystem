@@ -16,24 +16,19 @@ namespace SchoolManagementSystem.Services.Courses
         }
         public bool AssignGrade(int courseId, int studentId, int grade)
         {
-            var coutse = _context.Courses.FirstOrDefault(c => c.Id == courseId);
-            if (coutse == null)
-            {
+            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (course == null)
                 throw new Exception("Course not found.");
-            }
 
-            bool studentExists = _context.Students.Any(s => s.Id == studentId);
-            if(studentExists)
-            {
+            bool studentExists = course.Students.Any(s => s.Id == studentId);
+            if (!studentExists)
                 throw new Exception("Student is not assigned to this course.");
-            }
 
-            if(grade < 0 || grade > 20)
-            {
+            if (grade < 0 || grade > 20)
                 throw new Exception("Grade must be between 0 and 20.");
-            }
 
-            coutse.Grades[studentId] = grade;
+            course.Grades[studentId] = grade;
+
             return true;
         }
     }
