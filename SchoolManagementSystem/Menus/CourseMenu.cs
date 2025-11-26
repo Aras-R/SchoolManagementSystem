@@ -361,10 +361,6 @@ namespace SchoolManagementSystem.Menus
         // Shows all students and reads a valid student ID.
         private int ReadStudentId()
         {
-            Console.WriteLine("\nAvailable Students:");
-            foreach (var s in _context.Students)
-                Console.WriteLine($"{s.Id} - {s.FullName}");
-
             while (true)
             {
                 Console.Write("Enter Student Id: ");
