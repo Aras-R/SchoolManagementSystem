@@ -1,10 +1,7 @@
 ﻿using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Services.Teachers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolManagementSystem.Menus
 {
@@ -61,21 +58,16 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        // ---------------------------------------------------------
         private void AddTeacher()
         {
             Console.Clear();
             Console.WriteLine("=== Add Teacher ===");
 
-            string teacherCode = ReadNumeric("Teacher Code: ");
-
-            Console.Write("First Name: ");
-            string firstName = Console.ReadLine()!;
-
-            Console.Write("Last Name: ");
-            string lastName = Console.ReadLine()!;
-
-            Console.Write("College: ");
-            string college = Console.ReadLine()!;
+            string firstName = ReadName("First Name: ");
+            string lastName = ReadName("Last Name: ");
+            string teacherCode = ReadTeacherCode("Teacher Code (11 digits): ");
+            string college = ReadRequired("College: ");
 
             var service = new AddTeacherService(_context);
             var teacher = service.Add(teacherCode, firstName, lastName, college);
@@ -84,13 +76,21 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // ---------------------------------------------------------
+        //                 EDIT TEACHER WITH VALIDATION
+        // ---------------------------------------------------------
         private void EditTeacher()
         {
             Console.Clear();
             Console.WriteLine("=== Edit Teacher ===");
 
             Console.Write("Enter Teacher Id: ");
-            int id = int.Parse(Console.ReadLine()!);
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid Id!");
+                Console.ReadKey();
+                return;
+            }
 
             var getService = new GetTeacherByIdService(_context);
             var teacher = getService.GetById(id);
@@ -104,16 +104,10 @@ namespace SchoolManagementSystem.Menus
 
             Console.WriteLine($"Editing: {teacher.FullName}");
 
-            string teacherCode = ReadNumeric("New Teacher Code: ");
-
-            Console.Write("New First Name: ");
-            string firstName = Console.ReadLine()!;
-
-            Console.Write("New Last Name: ");
-            string lastName = Console.ReadLine()!;
-
-            Console.Write("New College: ");
-            string college = Console.ReadLine()!;
+            string firstName = ReadName("New First Name: ");
+            string lastName = ReadName("New Last Name: ");
+            string teacherCode = ReadTeacherCode("New Teacher Code (11 digits): ");
+            string college = ReadRequired("New College: ");
 
             var editService = new EditTeacherService(_context);
             editService.Edit(id, teacherCode, firstName, lastName, college);
@@ -122,25 +116,29 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // ---------------------------------------------------------
         private void DeleteTeacher()
         {
             Console.Clear();
             Console.WriteLine("=== Delete Teacher ===");
 
             Console.Write("Enter Teacher Id: ");
-            int id = int.Parse(Console.ReadLine()!);
+
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid Id!");
+                Console.ReadKey();
+                return;
+            }
 
             var deleteService = new DeleteTeacherService(_context);
             bool result = deleteService.Delete(id);
 
-            if (!result)
-                Console.WriteLine("Teacher not found!");
-            else
-                Console.WriteLine("Teacher deleted successfully!");
-
+            Console.WriteLine(result ? "Teacher deleted successfully!" : "Teacher not found!");
             Console.ReadKey();
         }
 
+        // ---------------------------------------------------------
         private void ListTeachers()
         {
             Console.Clear();
@@ -165,20 +163,75 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // Only numeric inputs allowed
-        private string ReadNumeric(string message)
+        // ---------------------------------------------------------
+        /// Reads a non-empty string (e.g., College)
+        private string ReadRequired(string msg)
         {
             while (true)
             {
-                Console.Write(message);
+                Console.Write(msg);
                 string? input = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(input) && input.All(char.IsDigit))
-                    return input;
+                if (!string.IsNullOrWhiteSpace(input))
+                    return input.Trim();
 
-                Console.WriteLine("❌ Only numbers are allowed!");
+                Console.WriteLine("❌ This field cannot be empty!");
+            }
+        }
+
+        /// Reads a validated name with length limits
+                private string ReadName(string msg)
+        {
+            while (true)
+            {
+                Console.Write(msg);
+                string? name = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Console.WriteLine("❌ Name cannot be empty!");
+                    continue;
+                }
+
+                if (name.Length < 2 || name.Length > 50)
+                {
+                    Console.WriteLine("❌ Name must be between 2 and 50 characters!");
+                    continue;
+                }
+
+                return name.Trim();
+            }
+        }
+
+        /// Reads an 11-digit numeric TeacherCode
+        private string ReadTeacherCode(string msg)
+        {
+            while (true)
+            {
+                Console.Write(msg);
+                string? input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("❌ Teacher code cannot be empty!");
+                    continue;
+                }
+
+                if (input.Length != 11 || !input.All(char.IsDigit))
+                {
+                    Console.WriteLine("❌ Teacher code must be 11 digits and numeric!");
+                    continue;
+                }
+
+                // check duplicate
+                if (_context.Teachers.Any(t => t.TeacherCode == input))
+                {
+                    Console.WriteLine("❌ This teacher code already exists!");
+                    continue;
+                }
+
+                return input;
             }
         }
     }
 }
-
