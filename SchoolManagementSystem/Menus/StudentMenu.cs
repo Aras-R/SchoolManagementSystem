@@ -1,10 +1,7 @@
 ﻿using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Services.Students;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolManagementSystem.Menus
 {
@@ -66,18 +63,11 @@ namespace SchoolManagementSystem.Menus
             Console.Clear();
             Console.WriteLine("=== Add Student ===");
 
-            Console.Write("First Name: ");
-            string firstName = Console.ReadLine()!;
-
-            Console.Write("Last Name: ");
-            string lastName = Console.ReadLine()!;
-
-            string studentNumber = ReadNumeric("Student Number: ");
-
+            string firstName = ReadName("First Name");
+            string lastName = ReadName("Last Name");
+            string studentNumber = ReadStudentNumber();
             DateTime birthDate = ReadDate("Birth Date (yyyy-mm-dd): ");
-
-            Console.Write("Major: ");
-            string major = Console.ReadLine()!;
+            string major = ReadRequired("Major");
 
             var service = new AddStudentService(_context);
             var student = service.Add(firstName, lastName, studentNumber, birthDate, major);
@@ -91,33 +81,25 @@ namespace SchoolManagementSystem.Menus
             Console.Clear();
             Console.WriteLine("=== Edit Student ===");
 
-            Console.Write("Enter Student Id: ");
-            int id = int.Parse(Console.ReadLine()!);
+            int id = ReadId("Enter Student Id: ");
 
             var getService = new GetStudentByIdService(_context);
             var student = getService.Get(id);
 
             if (student == null)
             {
-                Console.WriteLine("Student not found!");
+                Console.WriteLine("❌ Student not found!");
                 Console.ReadKey();
                 return;
             }
 
             Console.WriteLine($"Editing: {student.FullName}");
 
-            Console.Write("New First Name: ");
-            string firstName = Console.ReadLine()!;
-
-            Console.Write("New Last Name: ");
-            string lastName = Console.ReadLine()!;
-
-            string studentNumber = ReadNumeric("New Student Number: ");
-
+            string firstName = ReadName("New First Name");
+            string lastName = ReadName("New Last Name");
+            string studentNumber = ReadStudentNumber(id);
             DateTime birthDate = ReadDate("New Birth Date (yyyy-mm-dd): ");
-
-            Console.Write("New Major: ");
-            string major = Console.ReadLine()!;
+            string major = ReadRequired("New Major");
 
             var editService = new EditStudentService(_context);
             editService.Edit(id, firstName, lastName, studentNumber, birthDate, major);
@@ -131,17 +113,13 @@ namespace SchoolManagementSystem.Menus
             Console.Clear();
             Console.WriteLine("=== Delete Student ===");
 
-            Console.Write("Enter Student Id: ");
-            int id = int.Parse(Console.ReadLine()!);
+            int id = ReadId("Enter Student Id: ");
 
             var deleteService = new DeleteStudentService(_context);
+
             bool result = deleteService.Delete(id);
 
-            if (!result)
-                Console.WriteLine("Student not found!");
-            else
-                Console.WriteLine("Student deleted successfully!");
-
+            Console.WriteLine(result ? "Student deleted successfully!" : "Student not found!");
             Console.ReadKey();
         }
 
@@ -164,23 +142,69 @@ namespace SchoolManagementSystem.Menus
                     Console.WriteLine(student.FullInfo());
                     Console.WriteLine("-----------------------------");
                 }
-
             }
 
             Console.ReadKey();
         }
 
-        private string ReadNumeric(string message)
+        // ---------------------------
+        // Input Helper Methods
+        private int ReadId(string message)
         {
             while (true)
             {
                 Console.Write(message);
                 string? input = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(input) && input.All(char.IsDigit))
+                if (int.TryParse(input, out int id))
+                    return id;
+
+                Console.WriteLine("❌ Invalid number!");
+            }
+        }
+
+        private string ReadName(string label)
+        {
+            while (true)
+            {
+                Console.Write($"{label}: ");
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input) && input.Length is >= 2 and <= 50)
                     return input;
 
-                Console.WriteLine("❌ Only numbers are allowed!");
+                Console.WriteLine("❌ Name must be between 2 and 50 characters.");
+            }
+        }
+
+        private string ReadStudentNumber(int? editingId = null)
+        {
+            while (true)
+            {
+                Console.Write("Student Number (11 digits): ");
+                string? input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input) || !input.All(char.IsDigit))
+                {
+                    Console.WriteLine("❌ Student number must be numeric.");
+                    continue;
+                }
+
+                if (input.Length != 11)
+                {
+                    Console.WriteLine("❌ Student number must be exactly 11 digits.");
+                    continue;
+                }
+
+                bool exists = _context.Students.Any(s => s.StudentNumber == input && s.Id != editingId);
+
+                if (exists)
+                {
+                    Console.WriteLine("❌ Student number already exists!");
+                    continue;
+                }
+
+                return input;
             }
         }
 
@@ -198,5 +222,18 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        private string ReadRequired(string message)
+        {
+            while (true)
+            {
+                Console.Write($"{message}: ");
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input))
+                    return input;
+
+                Console.WriteLine("❌ This field is required!");
+            }
+        }
     }
 }
