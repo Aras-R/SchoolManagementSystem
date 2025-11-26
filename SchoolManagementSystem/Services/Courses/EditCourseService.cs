@@ -18,17 +18,19 @@ namespace SchoolManagementSystem.Services.Courses
 
         public bool Edit(int courseId, string newTitle, int newTeacherId)
         {
+            // Find course
             var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
             if (course == null)
                 throw new Exception("Course not found.");
 
+            // Find teacher
             var teacher = _context.Teachers.FirstOrDefault(t => t.Id == newTeacherId);
             if (teacher == null)
                 throw new Exception("Teacher not found.");
 
+            // Update fields
             course.Title = newTitle;
             course.Teacher = teacher;
-
             return true;
         }
     }

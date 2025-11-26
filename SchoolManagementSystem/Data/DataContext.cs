@@ -9,8 +9,13 @@ namespace SchoolManagementSystem.Data
 {
     public class DataContext
     {
+        // List of all students in the system.
         public List<Student> Students { get; set; } = new();
+
+        // List of all teachers in the system.
         public List<Teacher> Teachers { get; set; } = new();
+
+        // List of all courses in the system.
         public List<Course> Courses { get; set; } = new();
     }
 }

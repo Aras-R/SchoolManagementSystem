@@ -17,10 +17,12 @@ namespace SchoolManagementSystem.Services.Courses
 
         public bool Delete(int courseId)
         {
+            // Find course by ID
             var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
             if (course == null)
                 return false;
 
+            // Remove course
             _context.Courses.Remove(course);
             return true;
         }

@@ -18,6 +18,7 @@ namespace SchoolManagementSystem.Services.Teachers
 
         public Teacher? GetById(int id)
         {
+            // Return teacher with matching ID
             return _context.Teachers.FirstOrDefault(t => t.Id == id);
         }
     }

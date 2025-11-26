@@ -14,6 +14,7 @@ namespace SchoolManagementSystem.Menus
             _context = context;
         }
 
+        // Shows the course management menu.
         public void Show()
         {
             while (true)
@@ -49,6 +50,8 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        //-----------------------------------------------------------------------
+        // Create a new lesson with the teacher
         private void AddCourse()
         {
             Console.Clear();
@@ -76,6 +79,7 @@ namespace SchoolManagementSystem.Menus
         }
 
 
+        // Adds a student to a course.
         private void AddStudentToCourse()
         {
             Console.Clear();
@@ -87,14 +91,14 @@ namespace SchoolManagementSystem.Menus
 
             if (course == null)
             {
-                Console.WriteLine("❌ Course not found!");
+                Console.WriteLine("Course not found!");
                 Console.ReadKey();
                 return;
             }
 
             if (_context.Students.Count == 0)
             {
-                Console.WriteLine("❌ There are no students to add!");
+                Console.WriteLine("There are no students to add!");
                 Console.ReadKey();
                 return;
             }
@@ -103,7 +107,7 @@ namespace SchoolManagementSystem.Menus
 
             if (course.Students.Any(s => s.Id == studentId))
             {
-                Console.WriteLine("❌ Student already assigned to this course!");
+                Console.WriteLine("Student already assigned to this course!");
                 Console.ReadKey();
                 return;
             }
@@ -123,7 +127,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-
+        // Assigns a grade to a student in a course.
         private void AssignGrade()
         {
             Console.Clear();
@@ -135,14 +139,14 @@ namespace SchoolManagementSystem.Menus
 
             if (course == null)
             {
-                Console.WriteLine("❌ Course not found!");
+                Console.WriteLine("Course not found!");
                 Console.ReadKey();
                 return;
             }
 
             if (course.Students.Count == 0)
             {
-                Console.WriteLine("❌ This course has no students!");
+                Console.WriteLine("This course has no students!");
                 Console.ReadKey();
                 return;
             }
@@ -155,7 +159,7 @@ namespace SchoolManagementSystem.Menus
 
             if (!course.Students.Any(s => s.Id == studentId))
             {
-                Console.WriteLine("❌ This student is not assigned to this course!");
+                Console.WriteLine("This student is not assigned to this course!");
                 Console.ReadKey();
                 return;
             }
@@ -178,6 +182,7 @@ namespace SchoolManagementSystem.Menus
         }
 
 
+        // Shows all courses with teacher name.
         private void ListCourses()
         {
             Console.Clear();
@@ -219,6 +224,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // Edits a course’s title or teacher.
         private void EditCourse()
         {
             Console.Clear();
@@ -230,7 +236,7 @@ namespace SchoolManagementSystem.Menus
 
             if (course == null)
             {
-                Console.WriteLine("❌ Course not found!");
+                Console.WriteLine("Course not found!");
                 Console.ReadKey();
                 return;
             }
@@ -254,9 +260,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -------------------------------------------------------------------
-        //                          DELETE COURSE
-        // -------------------------------------------------------------------
+        // Deletes a course.
         private void DeleteCourse()
         {
             Console.Clear();
@@ -275,6 +279,10 @@ namespace SchoolManagementSystem.Menus
         }
 
 
+        // ---------------------------
+        // Input Helper Methods
+
+        // Reads a valid course title from the user.
         private string ReadCourseTitle()
         {
             while (true)
@@ -284,13 +292,13 @@ namespace SchoolManagementSystem.Menus
 
                 if (string.IsNullOrWhiteSpace(title))
                 {
-                    Console.WriteLine("❌ Title cannot be empty!");
+                    Console.WriteLine("Title cannot be empty!");
                     continue;
                 }
 
-                if (title.Length < 2 || title.Length > 70)
+                if (title.Length < 2 || title.Length > 50)
                 {
-                    Console.WriteLine("❌ Title must be 2–70 characters!");
+                    Console.WriteLine("Title must be 2–50 characters!");
                     continue;
                 }
 
@@ -298,11 +306,12 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        // Shows all teachers and reads a valid teacher ID.
         private int ReadTeacherId()
         {
             if (_context.Teachers.Count == 0)
             {
-                Console.WriteLine("❌ There are no teachers!");
+                Console.WriteLine("There are no teachers!");
                 Console.ReadKey();
                 return -1;
             }
@@ -319,15 +328,16 @@ namespace SchoolManagementSystem.Menus
                 if (int.TryParse(input, out int id) && _context.Teachers.Any(t => t.Id == id))
                     return id;
 
-                Console.WriteLine("❌ Invalid Teacher Id!");
+                Console.WriteLine("Invalid Teacher Id!");
             }
         }
 
+        // Shows all courses and reads a valid course ID.
         private int ReadCourseId()
         {
             if (_context.Courses.Count == 0)
             {
-                Console.WriteLine("❌ There are no courses!");
+                Console.WriteLine("There are no courses!");
                 Console.ReadKey();
                 return -1;
             }
@@ -344,10 +354,11 @@ namespace SchoolManagementSystem.Menus
                 if (int.TryParse(input, out int id) && _context.Courses.Any(c => c.Id == id))
                     return id;
 
-                Console.WriteLine("❌ Invalid Course Id!");
+                Console.WriteLine("Invalid Course Id!");
             }
         }
 
+        // Shows all students and reads a valid student ID.
         private int ReadStudentId()
         {
             Console.WriteLine("\nAvailable Students:");
@@ -362,10 +373,11 @@ namespace SchoolManagementSystem.Menus
                 if (int.TryParse(input, out int id) && _context.Students.Any(s => s.Id == id))
                     return id;
 
-                Console.WriteLine("❌ Invalid Student Id!");
+                Console.WriteLine("Invalid Student Id!");
             }
         }
 
+        // Reads a valid grade between 0 and 20.
         private int ReadGrade(string msg)
         {
             while (true)
@@ -375,13 +387,13 @@ namespace SchoolManagementSystem.Menus
 
                 if (!int.TryParse(input, out int grade))
                 {
-                    Console.WriteLine("❌ Grade must be a number!");
+                    Console.WriteLine("Grade must be a number!");
                     continue;
                 }
 
                 if (grade < 0 || grade > 20)
                 {
-                    Console.WriteLine("❌ Grade must be between 0 and 20!");
+                    Console.WriteLine("Grade must be between 0 and 20!");
                     continue;
                 }
 

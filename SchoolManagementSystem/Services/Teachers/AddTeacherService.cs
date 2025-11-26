@@ -18,10 +18,12 @@ namespace SchoolManagementSystem.Services.Teachers
 
         public Teacher Add(string teacherCode, string firstName, string lastName, string college)
         {
+            // Create new ID 
             int newId = _context.Teachers.Count == 0
                 ? 1
                 : _context.Teachers.Max(t => t.Id) + 1;
 
+            // Create teacher object
             var teacher = new Teacher
             {
                 Id = newId,
@@ -31,8 +33,8 @@ namespace SchoolManagementSystem.Services.Teachers
                 College = college
             };
 
+            // Add to list
             _context.Teachers.Add(teacher);
-
             return teacher;
 
         }

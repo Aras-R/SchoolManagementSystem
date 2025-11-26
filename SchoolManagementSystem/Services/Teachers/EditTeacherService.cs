@@ -17,10 +17,12 @@ namespace SchoolManagementSystem.Services.Teachers
 
         public bool Edit(int id, string teacherCode, string firstName, string lastName, string college)
         {
+            // Find teacher by ID
             var teacher = _context.Teachers.FirstOrDefault(t => t.Id == id);
             if (teacher == null)
                 return false;
 
+            // Update teacher info
             teacher.TeacherCode = teacherCode;
             teacher.FirstName = firstName;
             teacher.LastName = lastName;

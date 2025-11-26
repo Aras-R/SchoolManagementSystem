@@ -17,24 +17,28 @@ namespace SchoolManagementSystem.Services.Courses
 
         public bool AddStudent(int courseId, int studentId)
         {
+            // Find course
             var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
             if (course == null)
             {
                 throw new Exception("Course not found.");
             }
 
-            var  student = _context.Students.FirstOrDefault(s => s.Id == studentId);
+            // Find student
+            var student = _context.Students.FirstOrDefault(s => s.Id == studentId);
             if (student == null)
             {
                 throw new Exception("Student not found.");
             }
 
+            // Check if already added
             bool alreadyExists = course.Students.Any(s => s.Id == studentId);
             if (alreadyExists)
             {
                 throw new Exception("Student already assigned to this course.");
             }
 
+            // Add student to course
             course.Students.Add(student);
             return true;
         }

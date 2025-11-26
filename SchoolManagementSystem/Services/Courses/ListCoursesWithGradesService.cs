@@ -18,6 +18,7 @@ namespace SchoolManagementSystem.Services.Courses
 
         public List<Course> GetAll()
         {
+            // Return full list of courses
             return _context.Courses;
         }
     }

@@ -18,6 +18,7 @@ namespace SchoolManagementSystem.Services.Teachers
 
         public List<Teacher> GetAll()
         {
+            // Return all teachers in list
             return _Context.Teachers.ToList();
         }
     }

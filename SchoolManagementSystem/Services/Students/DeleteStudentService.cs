@@ -17,12 +17,14 @@ namespace SchoolManagementSystem.Services.Students
 
         public bool Delete(int id)
         {
+            // Find student by ID
             var student = _Context.Students.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
                 return false;
             }
 
+            // Remove student from list
             _Context.Students.Remove(student);
             return true;
         }

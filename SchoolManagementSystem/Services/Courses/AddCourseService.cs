@@ -19,17 +19,17 @@ namespace SchoolManagementSystem.Services.Courses
 
         public Course Add(string title, int teacherId)
         {
-
+            // Find assigned teacher
             var teacher = _context.Teachers.FirstOrDefault(t => t.Id == teacherId);
             if (teacher == null)
                 throw new Exception("Teacher not found.");
 
-
+            // Generate new course ID
             int newId = _context.Courses.Count == 0
                 ? 1
                 : _context.Courses.Max(c => c.Id) + 1;
 
-
+            // Create course object
             var course = new Course
             {
                 Id = newId,
@@ -37,8 +37,8 @@ namespace SchoolManagementSystem.Services.Courses
                 Teacher = teacher,
             };
 
+            // Save in list
             _context.Courses.Add(course);
-
             return course;
         }
     }

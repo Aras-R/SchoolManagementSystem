@@ -14,6 +14,7 @@ namespace SchoolManagementSystem.Menus
             _context = context;
         }
 
+        // Shows the teacher management menu.
         public void Show()
         {
             while (true)
@@ -58,7 +59,8 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // ---------------------------------------------------------
+        // ----------------------------------------------------------------
+        // Creates a new teacher.
         private void AddTeacher()
         {
             Console.Clear();
@@ -76,9 +78,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------------------------------------
-        //                 EDIT TEACHER WITH VALIDATION
-        // ---------------------------------------------------------
+        // Edits an existing teacher.
         private void EditTeacher()
         {
             Console.Clear();
@@ -116,7 +116,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------------------------------------
+        // Deletes a teacher.
         private void DeleteTeacher()
         {
             Console.Clear();
@@ -138,7 +138,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------------------------------------
+        // Shows all teachers.
         private void ListTeachers()
         {
             Console.Clear();
@@ -163,8 +163,11 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------------------------------------
-        /// Reads a non-empty string (e.g., College)
+
+        // ---------------------------------------------------------------
+        // Input Helper Methods
+
+        // Reads a required string.
         private string ReadRequired(string msg)
         {
             while (true)
@@ -175,11 +178,11 @@ namespace SchoolManagementSystem.Menus
                 if (!string.IsNullOrWhiteSpace(input))
                     return input.Trim();
 
-                Console.WriteLine("❌ This field cannot be empty!");
+                Console.WriteLine("This field cannot be empty!");
             }
         }
 
-        /// Reads a validated name with length limits
+        // Reads a validated name with length limits
                 private string ReadName(string msg)
         {
             while (true)
@@ -189,13 +192,13 @@ namespace SchoolManagementSystem.Menus
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    Console.WriteLine("❌ Name cannot be empty!");
+                    Console.WriteLine("Name cannot be empty!");
                     continue;
                 }
 
                 if (name.Length < 2 || name.Length > 50)
                 {
-                    Console.WriteLine("❌ Name must be between 2 and 50 characters!");
+                    Console.WriteLine("Name must be between 2 and 50 characters!");
                     continue;
                 }
 
@@ -203,7 +206,7 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        /// Reads an 11-digit numeric TeacherCode
+        // Reads an 11-digit numeric TeacherCode
         private string ReadTeacherCode(string msg)
         {
             while (true)
@@ -213,20 +216,19 @@ namespace SchoolManagementSystem.Menus
 
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.WriteLine("❌ Teacher code cannot be empty!");
+                    Console.WriteLine("Teacher code cannot be empty!");
                     continue;
                 }
 
                 if (input.Length != 11 || !input.All(char.IsDigit))
                 {
-                    Console.WriteLine("❌ Teacher code must be 11 digits and numeric!");
+                    Console.WriteLine("Teacher code must be 11 digits and numeric!");
                     continue;
                 }
 
-                // check duplicate
                 if (_context.Teachers.Any(t => t.TeacherCode == input))
                 {
-                    Console.WriteLine("❌ This teacher code already exists!");
+                    Console.WriteLine("This teacher code already exists!");
                     continue;
                 }
 

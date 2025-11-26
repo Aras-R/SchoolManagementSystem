@@ -18,10 +18,12 @@ namespace SchoolManagementSystem.Services.Students
 
         public Student Add(string firstName, string lastName, string studentNumber, DateTime birthDate, string major)
         {
+            // Create new ID (if no students → start from 1)
             int newId = _context.Students.Count == 0
                 ? 1
                 : _context.Students.Max(s => s.Id) + 1;
 
+            // Create student object
             var student = new Student
             {
                 Id = newId,
@@ -32,6 +34,7 @@ namespace SchoolManagementSystem.Services.Students
                 Major = major
             };
 
+            // Add to database (list)
             _context.Students.Add(student);
 
             return student;

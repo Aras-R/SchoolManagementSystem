@@ -18,10 +18,12 @@ namespace SchoolManagementSystem.Services.Students
 
         public Student? Edit(int id, string firstName, string lastName, string studentNumber, DateTime birthDate, string major)
         {
+            // Find student by ID
             var student = _Context.Students.FirstOrDefault(s => s.Id == id);
             if (student == null)
                 return null;
 
+            // Update fields
             student.FirstName = firstName;
             student.LastName = lastName;
             student.StudentNumber = studentNumber;

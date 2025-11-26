@@ -8,6 +8,7 @@ namespace SchoolManagementSystem.Models
 {
     public class Student
     {
+        //Defining student features
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -21,6 +22,7 @@ namespace SchoolManagementSystem.Models
             return $"{Id} - {FullName} ({StudentNumber})";
         }
 
+        // Shows complete student info
         public string FullInfo()
         {
             return

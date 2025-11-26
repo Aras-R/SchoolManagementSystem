@@ -14,6 +14,7 @@ namespace SchoolManagementSystem.Menus
             _context = context;
         }
 
+        // Shows the student management menu.
         public void Show()
         {
             while (true)
@@ -58,6 +59,8 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        // ----------------------------------------------------------------
+        // Reads student info and creates a new student.
         private void AddStudent()
         {
             Console.Clear();
@@ -76,6 +79,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // Edits an existing student.
         private void EditStudent()
         {
             Console.Clear();
@@ -88,7 +92,7 @@ namespace SchoolManagementSystem.Menus
 
             if (student == null)
             {
-                Console.WriteLine("❌ Student not found!");
+                Console.WriteLine("Student not found!");
                 Console.ReadKey();
                 return;
             }
@@ -108,6 +112,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // Deletes a student.
         private void DeleteStudent()
         {
             Console.Clear();
@@ -123,6 +128,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // Shows the list of all students.
         private void ListStudents()
         {
             Console.Clear();
@@ -147,8 +153,10 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------
+        // -----------------------------------------------------------------
         // Input Helper Methods
+
+        // Reads a valid numeric ID.
         private int ReadId(string message)
         {
             while (true)
@@ -159,10 +167,11 @@ namespace SchoolManagementSystem.Menus
                 if (int.TryParse(input, out int id))
                     return id;
 
-                Console.WriteLine("❌ Invalid number!");
+                Console.WriteLine("Invalid number!");
             }
         }
 
+        // Reads a non-empty name.
         private string ReadName(string label)
         {
             while (true)
@@ -173,10 +182,11 @@ namespace SchoolManagementSystem.Menus
                 if (!string.IsNullOrWhiteSpace(input) && input.Length is >= 2 and <= 50)
                     return input;
 
-                Console.WriteLine("❌ Name must be between 2 and 50 characters.");
+                Console.WriteLine("Name must be between 2 and 50 characters.");
             }
         }
 
+        // Reads a unique 11-digit student number.
         private string ReadStudentNumber(int? editingId = null)
         {
             while (true)
@@ -186,13 +196,13 @@ namespace SchoolManagementSystem.Menus
 
                 if (string.IsNullOrWhiteSpace(input) || !input.All(char.IsDigit))
                 {
-                    Console.WriteLine("❌ Student number must be numeric.");
+                    Console.WriteLine("Student number must be numeric.");
                     continue;
                 }
 
                 if (input.Length != 11)
                 {
-                    Console.WriteLine("❌ Student number must be exactly 11 digits.");
+                    Console.WriteLine("Student number must be exactly 11 digits.");
                     continue;
                 }
 
@@ -200,7 +210,7 @@ namespace SchoolManagementSystem.Menus
 
                 if (exists)
                 {
-                    Console.WriteLine("❌ Student number already exists!");
+                    Console.WriteLine("Student number already exists!");
                     continue;
                 }
 
@@ -208,6 +218,7 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
+        // Reads a valid date.
         private DateTime ReadDate(string message)
         {
             while (true)
@@ -218,10 +229,11 @@ namespace SchoolManagementSystem.Menus
                 if (DateTime.TryParse(input, out DateTime date))
                     return date;
 
-                Console.WriteLine("❌ Invalid date format! (Use yyyy-mm-dd)");
+                Console.WriteLine("Invalid date format! (Use yyyy-mm-dd)");
             }
         }
 
+        // Reads a required string.
         private string ReadRequired(string message)
         {
             while (true)
@@ -232,7 +244,7 @@ namespace SchoolManagementSystem.Menus
                 if (!string.IsNullOrWhiteSpace(input))
                     return input;
 
-                Console.WriteLine("❌ This field is required!");
+                Console.WriteLine("This field is required!");
             }
         }
     }
