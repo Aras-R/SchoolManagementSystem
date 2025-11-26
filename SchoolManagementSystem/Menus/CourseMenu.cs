@@ -49,21 +49,24 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // ------------------------- Add Course -------------------------
         private void AddCourse()
         {
             Console.Clear();
             Console.WriteLine("=== Add Course ===");
 
-            Console.Write("Course Title: ");
-            string title = Console.ReadLine()!;
+            if (_context.Teachers.Count == 0)
+            {
+                Console.WriteLine("No teachers found!");
+                Console.WriteLine("Please add a teacher before creating a course.");
+                Console.ReadKey();
+                return;
+            }
 
-            Console.WriteLine("\nAvailable Teachers:");
-            foreach (var t in _context.Teachers)
-                Console.WriteLine($"{t.Id} - {t.FullName}");
+            string title = ReadCourseTitle();
 
-            Console.Write("\nSelect Teacher Id: ");
-            int teacherId = int.Parse(Console.ReadLine()!);
+            int teacherId = ReadTeacherId();
+            if (teacherId == -1)   
+                return;
 
             var service = new AddCourseService(_context);
             var course = service.Add(title, teacherId);
@@ -72,25 +75,38 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ------------------------- Add Student to Course -------------------------
+
         private void AddStudentToCourse()
         {
             Console.Clear();
             Console.WriteLine("=== Add Student to Course ===");
 
-            Console.WriteLine("Available Courses:");
-            foreach (var c in _context.Courses)
-                Console.WriteLine($"{c.Id} - {c.Title}");
+            int courseId = ReadCourseId();
 
-            Console.Write("\nEnter Course Id: ");
-            int courseId = int.Parse(Console.ReadLine()!);
+            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
 
-            Console.WriteLine("\nAvailable Students:");
-            foreach (var s in _context.Students)
-                Console.WriteLine($"{s.Id} - {s.FullName}");
+            if (course == null)
+            {
+                Console.WriteLine("❌ Course not found!");
+                Console.ReadKey();
+                return;
+            }
 
-            Console.Write("\nEnter Student Id: ");
-            int studentId = int.Parse(Console.ReadLine()!);
+            if (_context.Students.Count == 0)
+            {
+                Console.WriteLine("❌ There are no students to add!");
+                Console.ReadKey();
+                return;
+            }
+
+            int studentId = ReadStudentId();
+
+            if (course.Students.Any(s => s.Id == studentId))
+            {
+                Console.WriteLine("❌ Student already assigned to this course!");
+                Console.ReadKey();
+                return;
+            }
 
             var service = new AddStudentToCourseService(_context);
 
@@ -107,44 +123,44 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ------------------------- Assign Grade -------------------------
+
         private void AssignGrade()
         {
             Console.Clear();
             Console.WriteLine("=== Assign Grade ===");
 
-            Console.WriteLine("Available Courses:");
-            foreach (var c in _context.Courses)
-                Console.WriteLine($"{c.Id} - {c.Title}");
-
-            Console.Write("\nEnter Course Id: ");
-            int courseId = int.Parse(Console.ReadLine()!);
+            int courseId = ReadCourseId();
 
             var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
 
             if (course == null)
             {
-                Console.WriteLine("Course not found!");
+                Console.WriteLine("❌ Course not found!");
                 Console.ReadKey();
                 return;
             }
 
             if (course.Students.Count == 0)
             {
-                Console.WriteLine("This course has no students!");
+                Console.WriteLine("❌ This course has no students!");
                 Console.ReadKey();
                 return;
             }
 
-            Console.WriteLine("\nStudents in Course:");
+            Console.WriteLine("\nStudents:");
             foreach (var s in course.Students)
                 Console.WriteLine($"{s.Id} - {s.FullName}");
 
-            Console.Write("\nEnter Student Id: ");
-            int studentId = int.Parse(Console.ReadLine()!);
+            int studentId = ReadStudentId();
 
-            Console.Write("Enter Grade (0-20): ");
-            int grade = int.Parse(Console.ReadLine()!);
+            if (!course.Students.Any(s => s.Id == studentId))
+            {
+                Console.WriteLine("❌ This student is not assigned to this course!");
+                Console.ReadKey();
+                return;
+            }
+
+            int grade = ReadGrade("Enter Grade (0–20): ");
 
             var service = new AssignGradeService(_context);
 
@@ -161,7 +177,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ------------------------- List Courses -------------------------
+
         private void ListCourses()
         {
             Console.Clear();
@@ -188,12 +204,10 @@ namespace SchoolManagementSystem.Menus
                     continue;
                 }
 
-                Console.WriteLine("\nStudents:");
-
                 foreach (var student in course.Students)
                 {
-                    string gradeDisplay = course.Grades.ContainsKey(student.Id)
-                        ? course.Grades[student.Id].ToString()
+                    string gradeDisplay = course.Grades.TryGetValue(student.Id, out int grade)
+                        ? grade.ToString()
                         : "No Grade";
 
                     Console.WriteLine($"- {student.FullName} → Grade: {gradeDisplay}");
@@ -205,37 +219,25 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ------------------------- Edit Course -------------------------
         private void EditCourse()
         {
             Console.Clear();
             Console.WriteLine("=== Edit Course ===");
 
-            Console.WriteLine("Available Courses:");
-            foreach (var c in _context.Courses)
-                Console.WriteLine($"{c.Id} - {c.Title}");
-
-            Console.Write("\nEnter Course Id: ");
-            int courseId = int.Parse(Console.ReadLine()!);
+            int courseId = ReadCourseId();
 
             var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
 
             if (course == null)
             {
-                Console.WriteLine("Course not found!");
+                Console.WriteLine("❌ Course not found!");
                 Console.ReadKey();
                 return;
             }
 
-            Console.Write("New Course Title: ");
-            string newTitle = Console.ReadLine()!;
+            string newTitle = ReadCourseTitle();
 
-            Console.WriteLine("\nAvailable Teachers:");
-            foreach (var t in _context.Teachers)
-                Console.WriteLine($"{t.Id} - {t.FullName}");
-
-            Console.Write("\nEnter New Teacher Id: ");
-            int newTeacherId = int.Parse(Console.ReadLine()!);
+            int newTeacherId = ReadTeacherId();
 
             var service = new EditCourseService(_context);
 
@@ -252,18 +254,15 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ------------------------- Delete Course -------------------------
+        // -------------------------------------------------------------------
+        //                          DELETE COURSE
+        // -------------------------------------------------------------------
         private void DeleteCourse()
         {
             Console.Clear();
             Console.WriteLine("=== Delete Course ===");
 
-            Console.WriteLine("Available Courses:");
-            foreach (var c in _context.Courses)
-                Console.WriteLine($"{c.Id} - {c.Title}");
-
-            Console.Write("\nEnter Course Id: ");
-            int courseId = int.Parse(Console.ReadLine()!);
+            int courseId = ReadCourseId();
 
             var service = new DeleteCourseService(_context);
             bool result = service.Delete(courseId);
@@ -273,6 +272,121 @@ namespace SchoolManagementSystem.Menus
                 : "\nCourse not found!");
 
             Console.ReadKey();
+        }
+
+
+        private string ReadCourseTitle()
+        {
+            while (true)
+            {
+                Console.Write("Course Title: ");
+                string? title = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    Console.WriteLine("❌ Title cannot be empty!");
+                    continue;
+                }
+
+                if (title.Length < 2 || title.Length > 70)
+                {
+                    Console.WriteLine("❌ Title must be 2–70 characters!");
+                    continue;
+                }
+
+                return title;
+            }
+        }
+
+        private int ReadTeacherId()
+        {
+            if (_context.Teachers.Count == 0)
+            {
+                Console.WriteLine("❌ There are no teachers!");
+                Console.ReadKey();
+                return -1;
+            }
+
+            Console.WriteLine("\nAvailable Teachers:");
+            foreach (var t in _context.Teachers)
+                Console.WriteLine($"{t.Id} - {t.FullName}");
+
+            while (true)
+            {
+                Console.Write("Select Teacher Id: ");
+                string? input = Console.ReadLine();
+
+                if (int.TryParse(input, out int id) && _context.Teachers.Any(t => t.Id == id))
+                    return id;
+
+                Console.WriteLine("❌ Invalid Teacher Id!");
+            }
+        }
+
+        private int ReadCourseId()
+        {
+            if (_context.Courses.Count == 0)
+            {
+                Console.WriteLine("❌ There are no courses!");
+                Console.ReadKey();
+                return -1;
+            }
+
+            Console.WriteLine("Available Courses:");
+            foreach (var c in _context.Courses)
+                Console.WriteLine($"{c.Id} - {c.Title}");
+
+            while (true)
+            {
+                Console.Write("Enter Course Id: ");
+                string? input = Console.ReadLine();
+
+                if (int.TryParse(input, out int id) && _context.Courses.Any(c => c.Id == id))
+                    return id;
+
+                Console.WriteLine("❌ Invalid Course Id!");
+            }
+        }
+
+        private int ReadStudentId()
+        {
+            Console.WriteLine("\nAvailable Students:");
+            foreach (var s in _context.Students)
+                Console.WriteLine($"{s.Id} - {s.FullName}");
+
+            while (true)
+            {
+                Console.Write("Enter Student Id: ");
+                string? input = Console.ReadLine();
+
+                if (int.TryParse(input, out int id) && _context.Students.Any(s => s.Id == id))
+                    return id;
+
+                Console.WriteLine("❌ Invalid Student Id!");
+            }
+        }
+
+        private int ReadGrade(string msg)
+        {
+            while (true)
+            {
+                Console.Write(msg);
+                string? input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int grade))
+                {
+                    Console.WriteLine("❌ Grade must be a number!");
+                    continue;
+                }
+
+                if (grade < 0 || grade > 20)
+                {
+                    Console.WriteLine("❌ Grade must be between 0 and 20!");
+                    continue;
+                }
+
+                return grade;
+            }
         }
     }
 }
