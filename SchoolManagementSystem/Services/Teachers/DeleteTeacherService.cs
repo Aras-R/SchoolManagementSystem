@@ -18,12 +18,15 @@ namespace SchoolManagementSystem.Services.Teachers
 
         public bool Delete(int id)
         {
-            // Find teacher by ID
             var teacher = _context.Teachers.FirstOrDefault(t => t.Id == id);
-            if (teacher == null)
-                return false;
+            if (teacher == null) return false;
 
-            // Remove teacher from list
+            // Optional: remove or unassign courses taught by this teacher
+            foreach (var course in _context.Courses.Where(c => c.Teacher.Id == id))
+            {
+                course.Teacher = null; // or remove the course if desired
+            }
+
             _context.Teachers.Remove(teacher);
             return true;
         }

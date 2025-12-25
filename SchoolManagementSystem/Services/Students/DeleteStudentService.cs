@@ -9,24 +9,23 @@ namespace SchoolManagementSystem.Services.Students
 {
     public class DeleteStudentService
     {
-        private readonly DataContext _Context;
+        private readonly DataContext _context;
         public DeleteStudentService(DataContext context)
         {
-            _Context = context;
+            _context = context;
         }
 
         public bool Delete(int id)
         {
-            // Find student by ID
-            var student = _Context.Students.FirstOrDefault(s => s.Id == id);
-            if (student == null)
-            {
-                return false;
-            }
+            var student = _context.Students.FirstOrDefault(s => s.Id == id);
+            if (student == null) return false;
 
-            // Remove student from list
-            _Context.Students.Remove(student);
+            // Remove all related StudentCourse entries
+            _context.StudentCourses.RemoveAll(sc => sc.StudentId == id);
+
+            _context.Students.Remove(student);
             return true;
         }
+
     }
 }
