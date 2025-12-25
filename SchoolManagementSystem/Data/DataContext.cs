@@ -17,5 +17,8 @@ namespace SchoolManagementSystem.Data
 
         // List of all courses in the system.
         public List<Course> Courses { get; set; } = new();
+
+        // List of student-course relationships
+        public List<StudentCourse> StudentCourses { get; set; } = new();
     }
 }
