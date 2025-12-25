@@ -17,3 +17,5 @@ namespace SchoolManagementSystem.Models
         // Optional grade
         public int? Grade { get; set; }
     }
+
+}
