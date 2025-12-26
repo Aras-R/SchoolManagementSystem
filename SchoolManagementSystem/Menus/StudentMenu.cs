@@ -15,37 +15,32 @@ namespace SchoolManagementSystem.Menus
             _context = context;
         }
 
-        // Shows the student management menu.
+        // Shows the student management menu
         public void Show()
         {
             while (true)
             {
                 Console.Clear();
                 Console.WriteLine("=== Student Management ===");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("1) Add Student");
                 Console.WriteLine("2) Edit Student");
                 Console.WriteLine("3) Delete Student");
                 Console.WriteLine("4) List Students");
-                Console.WriteLine("4) --------------------------------");
-                Console.WriteLine("5) Add Student To Course");
-                Console.WriteLine("6) View Student Courses");
-                Console.WriteLine("7) Assign Grade");
-                Console.WriteLine("8) Remove Student From Course");
+                Console.WriteLine("5) View Student Courses");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("0) Back");
+                Console.WriteLine("----------------------------");
                 Console.Write("Choose: ");
 
                 string? input = Console.ReadLine();
-
                 switch (input)
                 {
                     case "1": AddStudent(); break;
                     case "2": EditStudent(); break;
                     case "3": DeleteStudent(); break;
                     case "4": ListStudents(); break;
-                    case "5": AddStudentToCourse(); break;
-                    case "6": ListStudentCourses(); break;
-                    case "7": AssignGrade(); break;
-                    case "8": RemoveStudentFromCourse(); break;
+                    case "5": ListStudentCourses(); break;
                     case "0": return;
                     default:
                         Console.WriteLine("Invalid input!");
@@ -55,13 +50,13 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // ---------------------------------------------------------
-        // Student CRUD
-
+        // -----------------------
+        // Adds a new student
         private void AddStudent()
         {
             Console.Clear();
             Console.WriteLine("=== Add Student ===");
+            Console.WriteLine("-------------------");
 
             string firstName = ReadName("First Name");
             string lastName = ReadName("Last Name");
@@ -76,12 +71,16 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // -----------------------
+        // Edits an existing student
         private void EditStudent()
         {
             Console.Clear();
             Console.WriteLine("=== Edit Student ===");
+            Console.WriteLine("--------------------");
 
-            int id = ReadId("Enter Student Id: ");
+            int id = SelectStudentId();
+            if (id == -1) return;
 
             var getService = new GetStudentByIdService(_context);
             var student = getService.Get(id);
@@ -94,7 +93,6 @@ namespace SchoolManagementSystem.Menus
             }
 
             Console.WriteLine($"Editing: {student.FullName}");
-
             string firstName = ReadName("New First Name");
             string lastName = ReadName("New Last Name");
             string studentNumber = ReadStudentNumber(id);
@@ -108,12 +106,16 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // -----------------------
+        // Deletes a student
         private void DeleteStudent()
         {
             Console.Clear();
             Console.WriteLine("=== Delete Student ===");
+            Console.WriteLine("----------------------");
 
-            int id = ReadId("Enter Student Id: ");
+            int id = SelectStudentId();
+            if (id == -1) return;
 
             var deleteService = new DeleteStudentService(_context);
             bool result = deleteService.Delete(id);
@@ -122,10 +124,13 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
+        // -----------------------
+        // Lists all students with details
         private void ListStudents()
         {
             Console.Clear();
             Console.WriteLine("=== Student List ===");
+            Console.WriteLine("--------------------");
 
             var listService = new ListStudentsService(_context);
             var students = listService.GetAll();
@@ -146,30 +151,15 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // ---------------------------------------------------------
-        // StudentCourse Operations
-
-        private void AddStudentToCourse()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Add Student To Course ===");
-
-            int studentId = ReadId("Student Id: ");
-            int courseId = ReadId("Course Id: ");
-
-            var service = new AddStudentToCourseService(_context);
-            service.Add(studentId, courseId);
-
-            Console.WriteLine("Student added to course successfully!");
-            Console.ReadKey();
-        }
-
+        // -----------------------
+        // Shows all courses a student is enrolled in
         private void ListStudentCourses()
         {
             Console.Clear();
             Console.WriteLine("=== Student Courses ===");
 
-            int studentId = ReadId("Student Id: ");
+            int studentId = SelectStudentId();
+            if (studentId == -1) return;
 
             var service = new GetStudentCoursesService(_context);
             var courses = service.Get(studentId);
@@ -180,48 +170,39 @@ namespace SchoolManagementSystem.Menus
             }
             else
             {
-                foreach (var course in courses)
+                Console.WriteLine("Courses enrolled:");
+                foreach (var item in courses)
                 {
-                    Console.WriteLine(course);
+                    string gradeDisplay = item.Grade.HasValue ? item.Grade.Value.ToString() : "No Grade";
+                    Console.WriteLine($"{item.Course.Id} - {item.Course.Title} (Teacher: {item.Course.Teacher?.FullName ?? "No Teacher"}) → Grade: {gradeDisplay}");
                 }
             }
 
             Console.ReadKey();
         }
 
-        private void AssignGrade()
+        // -----------------------
+        // Helper: Displays students and reads a valid ID
+        private int SelectStudentId()
         {
-            Console.Clear();
-            Console.WriteLine("=== Assign Grade ===");
+            if (!_context.Students.Any())
+            {
+                Console.WriteLine("No students found.");
+                Console.ReadKey();
+                return -1;
+            }
 
-            int studentId = ReadId("Student Id: ");
-            int courseId = ReadId("Course Id: ");
-            int grade = ReadId("Grade (0-20): ");
+            Console.WriteLine("Available Students:");
+            foreach (var s in _context.Students)
+            {
+                Console.WriteLine($"{s.Id} - {s.FullName}");
+            }
 
-            var service = new AssignGradeService(_context);
-            service.Assign(studentId, courseId, grade);
-
-            Console.WriteLine("Grade assigned successfully!");
-            Console.ReadKey();
+            return ReadId("Enter Student Id: ");
         }
 
-        private void RemoveStudentFromCourse()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Remove Student From Course ===");
-
-            int studentId = ReadId("Student Id: ");
-            int courseId = ReadId("Course Id: ");
-
-            var service = new DeleteStudentFromCourseService(_context);
-            service.Delete(studentId, courseId);
-
-            Console.WriteLine("Student removed from course successfully!");
-            Console.ReadKey();
-        }
-
-        // ---------------------------------------------------------
-        // Input Helpers (UNCHANGED STYLE)
+        // -----------------------
+        // Input Helpers
 
         private int ReadId(string message)
         {
@@ -241,7 +222,6 @@ namespace SchoolManagementSystem.Menus
             {
                 Console.Write($"{label}: ");
                 string? input = Console.ReadLine();
-
                 if (!string.IsNullOrWhiteSpace(input) && input.Length is >= 2 and <= 50)
                     return input;
 
@@ -297,7 +277,6 @@ namespace SchoolManagementSystem.Menus
             {
                 Console.Write($"{message}: ");
                 string? input = Console.ReadLine();
-
                 if (!string.IsNullOrWhiteSpace(input))
                     return input;
 

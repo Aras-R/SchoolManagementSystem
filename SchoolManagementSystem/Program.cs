@@ -11,10 +11,13 @@ internal class Program
         {
             Console.Clear();
             Console.WriteLine("=== School Management System ===");
+            Console.WriteLine("--------------------------------");
             Console.WriteLine("1) Manage Students");
             Console.WriteLine("2) Manage Teachers");
             Console.WriteLine("3) Manage Courses");
+            Console.WriteLine("--------------------------------");
             Console.WriteLine("0) Exit");
+            Console.WriteLine("--------------------------------");
             Console.Write("Choose: ");
 
             string? choice = Console.ReadLine();

@@ -21,11 +21,14 @@ namespace SchoolManagementSystem.Menus
             {
                 Console.Clear();
                 Console.WriteLine("=== Teacher Management ===");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("1) Add Teacher");
                 Console.WriteLine("2) Edit Teacher");
                 Console.WriteLine("3) Delete Teacher");
                 Console.WriteLine("4) List Teachers");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("0) Back");
+                Console.WriteLine("----------------------------");
                 Console.Write("Choose: ");
 
                 string? input = Console.ReadLine();
@@ -65,6 +68,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Add Teacher ===");
+            Console.WriteLine("-------------------");
 
             string firstName = ReadName("First Name: ");
             string lastName = ReadName("Last Name: ");
@@ -83,6 +87,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Edit Teacher ===");
+            Console.WriteLine("--------------------");
 
             Console.Write("Enter Teacher Id: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
@@ -121,6 +126,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Delete Teacher ===");
+            Console.WriteLine("----------------------");
 
             Console.Write("Enter Teacher Id: ");
 
@@ -143,6 +149,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Teacher List ===");
+            Console.WriteLine("--------------------");
 
             var listService = new ListTeachersService(_context);
             var teachers = listService.GetAll();
