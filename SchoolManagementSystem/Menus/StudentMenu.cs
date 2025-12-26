@@ -1,4 +1,5 @@
 ﻿using SchoolManagementSystem.Data;
+using SchoolManagementSystem.Services.StudentCourses;
 using SchoolManagementSystem.Services.Students;
 using System;
 using System.Linq;
@@ -25,6 +26,11 @@ namespace SchoolManagementSystem.Menus
                 Console.WriteLine("2) Edit Student");
                 Console.WriteLine("3) Delete Student");
                 Console.WriteLine("4) List Students");
+                Console.WriteLine("4) --------------------------------");
+                Console.WriteLine("5) Add Student To Course");
+                Console.WriteLine("6) View Student Courses");
+                Console.WriteLine("7) Assign Grade");
+                Console.WriteLine("8) Remove Student From Course");
                 Console.WriteLine("0) Back");
                 Console.Write("Choose: ");
 
@@ -32,25 +38,15 @@ namespace SchoolManagementSystem.Menus
 
                 switch (input)
                 {
-                    case "1":
-                        AddStudent();
-                        break;
-
-                    case "2":
-                        EditStudent();
-                        break;
-
-                    case "3":
-                        DeleteStudent();
-                        break;
-
-                    case "4":
-                        ListStudents();
-                        break;
-
-                    case "0":
-                        return;
-
+                    case "1": AddStudent(); break;
+                    case "2": EditStudent(); break;
+                    case "3": DeleteStudent(); break;
+                    case "4": ListStudents(); break;
+                    case "5": AddStudentToCourse(); break;
+                    case "6": ListStudentCourses(); break;
+                    case "7": AssignGrade(); break;
+                    case "8": RemoveStudentFromCourse(); break;
+                    case "0": return;
                     default:
                         Console.WriteLine("Invalid input!");
                         Console.ReadKey();
@@ -59,8 +55,9 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // ----------------------------------------------------------------
-        // Reads student info and creates a new student.
+        // ---------------------------------------------------------
+        // Student CRUD
+
         private void AddStudent()
         {
             Console.Clear();
@@ -79,7 +76,6 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // Edits an existing student.
         private void EditStudent()
         {
             Console.Clear();
@@ -112,7 +108,6 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // Deletes a student.
         private void DeleteStudent()
         {
             Console.Clear();
@@ -121,14 +116,12 @@ namespace SchoolManagementSystem.Menus
             int id = ReadId("Enter Student Id: ");
 
             var deleteService = new DeleteStudentService(_context);
-
             bool result = deleteService.Delete(id);
 
             Console.WriteLine(result ? "Student deleted successfully!" : "Student not found!");
             Console.ReadKey();
         }
 
-        // Shows the list of all students.
         private void ListStudents()
         {
             Console.Clear();
@@ -137,7 +130,7 @@ namespace SchoolManagementSystem.Menus
             var listService = new ListStudentsService(_context);
             var students = listService.GetAll();
 
-            if (students.Count == 0)
+            if (!students.Any())
             {
                 Console.WriteLine("No students found.");
             }
@@ -153,25 +146,95 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -----------------------------------------------------------------
-        // Input Helper Methods
+        // ---------------------------------------------------------
+        // StudentCourse Operations
 
-        // Reads a valid numeric ID.
+        private void AddStudentToCourse()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Student To Course ===");
+
+            int studentId = ReadId("Student Id: ");
+            int courseId = ReadId("Course Id: ");
+
+            var service = new AddStudentToCourseService(_context);
+            service.Add(studentId, courseId);
+
+            Console.WriteLine("Student added to course successfully!");
+            Console.ReadKey();
+        }
+
+        private void ListStudentCourses()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Student Courses ===");
+
+            int studentId = ReadId("Student Id: ");
+
+            var service = new GetStudentCoursesService(_context);
+            var courses = service.Get(studentId);
+
+            if (!courses.Any())
+            {
+                Console.WriteLine("No courses found for this student.");
+            }
+            else
+            {
+                foreach (var course in courses)
+                {
+                    Console.WriteLine(course);
+                }
+            }
+
+            Console.ReadKey();
+        }
+
+        private void AssignGrade()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Assign Grade ===");
+
+            int studentId = ReadId("Student Id: ");
+            int courseId = ReadId("Course Id: ");
+            int grade = ReadId("Grade (0-20): ");
+
+            var service = new AssignGradeService(_context);
+            service.Assign(studentId, courseId, grade);
+
+            Console.WriteLine("Grade assigned successfully!");
+            Console.ReadKey();
+        }
+
+        private void RemoveStudentFromCourse()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Remove Student From Course ===");
+
+            int studentId = ReadId("Student Id: ");
+            int courseId = ReadId("Course Id: ");
+
+            var service = new DeleteStudentFromCourseService(_context);
+            service.Delete(studentId, courseId);
+
+            Console.WriteLine("Student removed from course successfully!");
+            Console.ReadKey();
+        }
+
+        // ---------------------------------------------------------
+        // Input Helpers (UNCHANGED STYLE)
+
         private int ReadId(string message)
         {
             while (true)
             {
                 Console.Write(message);
-                string? input = Console.ReadLine();
-
-                if (int.TryParse(input, out int id))
+                if (int.TryParse(Console.ReadLine(), out int id))
                     return id;
 
                 Console.WriteLine("Invalid number!");
             }
         }
 
-        // Reads a non-empty name.
         private string ReadName(string label)
         {
             while (true)
@@ -186,7 +249,6 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // Reads a unique 11-digit student number.
         private string ReadStudentNumber(int? editingId = null)
         {
             while (true)
@@ -207,7 +269,6 @@ namespace SchoolManagementSystem.Menus
                 }
 
                 bool exists = _context.Students.Any(s => s.StudentNumber == input && s.Id != editingId);
-
                 if (exists)
                 {
                     Console.WriteLine("Student number already exists!");
@@ -218,22 +279,18 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // Reads a valid date.
         private DateTime ReadDate(string message)
         {
             while (true)
             {
                 Console.Write(message);
-                string? input = Console.ReadLine();
-
-                if (DateTime.TryParse(input, out DateTime date))
+                if (DateTime.TryParse(Console.ReadLine(), out DateTime date))
                     return date;
 
-                Console.WriteLine("Invalid date format! (Use yyyy-mm-dd)");
+                Console.WriteLine("Invalid date format!");
             }
         }
 
-        // Reads a required string.
         private string ReadRequired(string message)
         {
             while (true)

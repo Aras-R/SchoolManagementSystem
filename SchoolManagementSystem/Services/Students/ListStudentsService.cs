@@ -19,7 +19,7 @@ namespace SchoolManagementSystem.Services.Students
         public List<Student> GetAll()
         {
             // Return all students from list
-            return _Context.Students;
+            return _Context.Students.ToList();
         }
     }
 }
