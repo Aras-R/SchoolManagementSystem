@@ -5,6 +5,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        // Shared in-memory data context
         DataContext context = new DataContext();
 
         while (true)
@@ -15,6 +16,7 @@ internal class Program
             Console.WriteLine("1) Manage Students");
             Console.WriteLine("2) Manage Teachers");
             Console.WriteLine("3) Manage Courses");
+            Console.WriteLine("4) Reports");              
             Console.WriteLine("--------------------------------");
             Console.WriteLine("0) Exit");
             Console.WriteLine("--------------------------------");
@@ -25,25 +27,26 @@ internal class Program
             switch (choice)
             {
                 case "1":
-                    var studentMenu = new StudentMenu(context);
-                    studentMenu.Show();
+                    new StudentMenu(context).Show();
                     break;
 
                 case "2":
-                    var teacherMenu = new TeacherMenu(context);
-                    teacherMenu.Show();
+                    new TeacherMenu(context).Show();
                     break;
 
                 case "3":
-                    var courseMenu = new CourseMenu(context);
-                    courseMenu.Show();
+                    new CourseMenu(context).Show();
+                    break;
+
+                case "4":                                   
+                    new ReportsMenu(context).Show();
                     break;
 
                 case "0":
                     return;
 
                 default:
-                    Console.WriteLine("Invalid input.");
+                    Console.WriteLine("Invalid input!");
                     Console.ReadKey();
                     break;
             }
