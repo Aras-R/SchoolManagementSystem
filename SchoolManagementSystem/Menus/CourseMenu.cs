@@ -188,8 +188,9 @@ namespace SchoolManagementSystem.Menus
             int courseId = SelectCourseId();
             if (courseId == -1) return; // no courses available or invalid input
 
-            int studentId = SelectStudentId();
-            if (studentId == -1) return; // no students available or invalid input
+            // Select only students registered in the selected course
+            int studentId = SelectStudentIdInCourse(courseId);
+            if (studentId == -1) return; // no students registered in this course
 
             var service = new DeleteStudentFromCourseService(_context);
 
@@ -200,7 +201,7 @@ namespace SchoolManagementSystem.Menus
             else
                 Console.WriteLine("Error: Student is not registered in this course.");
 
-            Console.ReadKey(); 
+            Console.ReadKey();
         }
 
         // ---------------------------------------
@@ -214,10 +215,11 @@ namespace SchoolManagementSystem.Menus
             int courseId = SelectCourseId();
             if (courseId == -1) return; // no courses available or invalid input
 
-            int studentId = SelectStudentId();
-            if (studentId == -1) return; // no students available or invalid input
+            // Select only students registered in the selected course
+            int studentId = SelectStudentIdInCourse(courseId);
+            if (studentId == -1) return; // no students registered in this course
 
-            int grade = ReadGrade("Enter Grade (0-20): "); 
+            int grade = ReadGrade("Enter Grade (0-20): ");
 
             var service = new AssignGradeService(_context);
 
@@ -228,11 +230,10 @@ namespace SchoolManagementSystem.Menus
             }
             catch (Exception ex)
             {
-                //grade out of range, student not registered in course
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            Console.ReadKey(); 
+            Console.ReadKey();
         }
 
         // ---------------------------------------
@@ -367,5 +368,41 @@ namespace SchoolManagementSystem.Menus
                 Console.WriteLine("Title must be between 2 and 50 characters.");
             }
         }
+
+        // Helper method: select student registered in a specific course
+        private int SelectStudentIdInCourse(int courseId)
+        {
+            var studentCourses = _context.StudentCourses
+                .Where(sc => sc.CourseId == courseId)
+                .ToList();
+
+            if (!studentCourses.Any())
+            {
+                Console.WriteLine("No students registered in this course.");
+                Console.ReadKey();
+                return -1;
+            }
+
+            Console.WriteLine("Registered Students:");
+            foreach (var sc in studentCourses)
+            {
+                var student = _context.Students.FirstOrDefault(s => s.Id == sc.StudentId);
+                if (student != null)
+                    Console.WriteLine($"{student.Id} - {student.FullName}");
+            }
+
+            while (true)
+            {
+                Console.Write("Student Id: ");
+                if (int.TryParse(Console.ReadLine(), out int id) &&
+                    studentCourses.Any(sc => sc.StudentId == id))
+                    return id;
+
+                Console.WriteLine("Invalid Student Id!");
+                Console.ReadKey();
+                return -1;
+            }
+        }
+
     }
 }

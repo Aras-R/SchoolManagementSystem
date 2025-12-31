@@ -24,10 +24,13 @@ namespace SchoolManagementSystem.Menus
             {
                 Console.Clear();
                 Console.WriteLine("=== Reports Menu ===");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("1) Student Average");
                 Console.WriteLine("2) Course Average");
                 Console.WriteLine("3) Overall Average");
+                Console.WriteLine("----------------------------");
                 Console.WriteLine("0) Back");
+                Console.WriteLine("----------------------------");
                 Console.Write("Choose: ");
 
                 string? input = Console.ReadLine();
@@ -52,6 +55,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Student Average ===");
+            Console.WriteLine("-----------------------");
 
             if (!_context.Students.Any())
             {
@@ -80,6 +84,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Course Average ===");
+            Console.WriteLine("----------------------");
 
             if (!_context.Courses.Any())
             {
@@ -108,6 +113,7 @@ namespace SchoolManagementSystem.Menus
         {
             Console.Clear();
             Console.WriteLine("=== Overall Average ===");
+            Console.WriteLine("-----------------------");
 
             var service = new CalculateOverallAverageService(_context);
             var average = service.Calculate();
