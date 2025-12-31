@@ -46,9 +46,7 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // ---------------------------------------------------------
-        // Report Actions
-
+        //------------------------------------------
         // Shows average grade of a selected student
         private void ShowStudentAverage()
         {
@@ -62,25 +60,21 @@ namespace SchoolManagementSystem.Menus
                 return;
             }
 
-            Console.WriteLine("Available Students:");
-            foreach (var s in _context.Students)
-                Console.WriteLine($"{s.Id} - {s.FullName}");
-
-            Console.Write("Student Id: ");
-            int studentId = int.Parse(Console.ReadLine()!);
+            int studentId = SelectStudentId();
+            if (studentId == -1) return; // Invalid or no students
 
             var service = new CalculateStudentAverageService(_context);
             var average = service.Calculate(studentId);
 
             Console.WriteLine(
                 average == null
-                ? "No grades found for this student."
-                : $"Student Average: {average:F2}"
+                    ? "No grades found for this student."
+                    : $"Student Average: {average:F2}"
             );
 
             Console.ReadKey();
         }
-
+        //------------------------------------------
         // Shows average grade of a selected course
         private void ShowCourseAverage()
         {
@@ -94,25 +88,21 @@ namespace SchoolManagementSystem.Menus
                 return;
             }
 
-            Console.WriteLine("Available Courses:");
-            foreach (var c in _context.Courses)
-                Console.WriteLine($"{c.Id} - {c.Title}");
-
-            Console.Write("Course Id: ");
-            int courseId = int.Parse(Console.ReadLine()!);
+            int courseId = SelectCourseId();
+            if (courseId == -1) return; // Invalid or no courses
 
             var service = new CalculateCourseAverageService(_context);
             var average = service.Calculate(courseId);
 
             Console.WriteLine(
                 average == null
-                ? "No grades found for this course."
-                : $"Course Average: {average:F2}"
+                    ? "No grades found for this course."
+                    : $"Course Average: {average:F2}"
             );
 
             Console.ReadKey();
         }
-
+        //------------------------------------------
         // Shows overall average of all grades
         private void ShowOverallAverage()
         {
@@ -124,11 +114,51 @@ namespace SchoolManagementSystem.Menus
 
             Console.WriteLine(
                 average == null
-                ? "No grades found in system."
-                : $"Overall Average: {average:F2}"
+                    ? "No grades found in system."
+                    : $"Overall Average: {average:F2}"
             );
 
             Console.ReadKey();
+        }
+
+        // -----------------------
+        // Helper Methods
+        // Displays students and reads valid student ID
+        private int SelectStudentId()
+        {
+            Console.WriteLine("Available Students:");
+            foreach (var s in _context.Students)
+                Console.WriteLine($"{s.Id} - {s.FullName}");
+
+            while (true)
+            {
+                Console.Write("Student Id: ");
+                if (int.TryParse(Console.ReadLine(), out int id) && _context.Students.Any(s => s.Id == id))
+                    return id;
+
+                Console.WriteLine("Invalid Student Id! Press any key to return...");
+                Console.ReadKey();
+                return -1;
+            }
+        }
+
+        // Displays courses and reads valid course ID
+        private int SelectCourseId()
+        {
+            Console.WriteLine("Available Courses:");
+            foreach (var c in _context.Courses)
+                Console.WriteLine($"{c.Id} - {c.Title}");
+
+            while (true)
+            {
+                Console.Write("Course Id: ");
+                if (int.TryParse(Console.ReadLine(), out int id) && _context.Courses.Any(c => c.Id == id))
+                    return id;
+
+                Console.WriteLine("Invalid Course Id! Press any key to return...");
+                Console.ReadKey();
+                return -1;
+            }
         }
     }
 }

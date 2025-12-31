@@ -57,7 +57,7 @@ namespace SchoolManagementSystem.Menus
             }
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Adds a new course with assigned teacher
         private void AddCourse()
         {
@@ -82,7 +82,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Edits an existing course
         private void EditCourse()
         {
@@ -103,7 +103,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Deletes a course
         private void DeleteCourse()
         {
@@ -121,7 +121,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Lists all courses with assigned teacher
         private void ListCourses()
         {
@@ -147,7 +147,7 @@ namespace SchoolManagementSystem.Menus
             Console.ReadKey();
         }
 
-        // -----------------------
+        // =======================================
         // Adds a student to a course
         private void AddStudentToCourse()
         {
@@ -156,19 +156,28 @@ namespace SchoolManagementSystem.Menus
             Console.WriteLine("-----------------------------");
 
             int courseId = SelectCourseId();
-            if (courseId == -1) return;
+            if (courseId == -1) return; // no courses available or invalid input
 
             int studentId = SelectStudentId();
-            if (studentId == -1) return;
+            if (studentId == -1) return; // no students available or invalid input
 
             var service = new AddStudentToCourseService(_context);
-            service.Add(studentId, courseId);
 
-            Console.WriteLine("Student added to course successfully!");
-            Console.ReadKey();
+            try
+            {
+                service.Add(studentId, courseId);
+                Console.WriteLine("Student added to course successfully!");
+            }
+            catch (Exception ex)
+            {
+                // student not found, course not found, already registered
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            Console.ReadKey(); 
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Removes a student from a course
         private void RemoveStudentFromCourse()
         {
@@ -177,19 +186,24 @@ namespace SchoolManagementSystem.Menus
             Console.WriteLine("----------------------------------");
 
             int courseId = SelectCourseId();
-            if (courseId == -1) return;
+            if (courseId == -1) return; // no courses available or invalid input
 
             int studentId = SelectStudentId();
-            if (studentId == -1) return;
+            if (studentId == -1) return; // no students available or invalid input
 
             var service = new DeleteStudentFromCourseService(_context);
-            service.Delete(studentId, courseId);
 
-            Console.WriteLine("Student removed from course successfully!");
-            Console.ReadKey();
+            bool result = service.Delete(studentId, courseId);
+
+            if (result)
+                Console.WriteLine("Student removed from course successfully!");
+            else
+                Console.WriteLine("Error: Student is not registered in this course.");
+
+            Console.ReadKey(); 
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Assigns a grade to a student in a course
         private void AssignGrade()
         {
@@ -198,21 +212,30 @@ namespace SchoolManagementSystem.Menus
             Console.WriteLine("--------------------");
 
             int courseId = SelectCourseId();
-            if (courseId == -1) return;
+            if (courseId == -1) return; // no courses available or invalid input
 
             int studentId = SelectStudentId();
-            if (studentId == -1) return;
+            if (studentId == -1) return; // no students available or invalid input
 
-            int grade = ReadGrade("Enter Grade (0-20): ");
+            int grade = ReadGrade("Enter Grade (0-20): "); 
 
             var service = new AssignGradeService(_context);
-            service.Assign(studentId, courseId, grade);
 
-            Console.WriteLine("Grade assigned successfully!");
-            Console.ReadKey();
+            try
+            {
+                service.Assign(studentId, courseId, grade);
+                Console.WriteLine("Grade assigned successfully!");
+            }
+            catch (Exception ex)
+            {
+                //grade out of range, student not registered in course
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            Console.ReadKey(); 
         }
 
-        // -----------------------
+        // ---------------------------------------
         // Lists all students enrolled in a course along with grades
         private void ListCourseStudents()
         {
@@ -221,7 +244,7 @@ namespace SchoolManagementSystem.Menus
             Console.WriteLine("-----------------------");
 
             int courseId = SelectCourseId();
-            if (courseId == -1) return;
+            if (courseId == -1) return; // no courses available or invalid input
 
             var service = new GetCourseStudentsService(_context);
             var students = service.Get(courseId);
@@ -232,6 +255,7 @@ namespace SchoolManagementSystem.Menus
             }
             else
             {
+                Console.WriteLine("Students enrolled in this course:");
                 foreach (var sc in students)
                 {
                     string grade = sc.Grade.HasValue ? sc.Grade.Value.ToString() : "No Grade";
@@ -239,10 +263,10 @@ namespace SchoolManagementSystem.Menus
                 }
             }
 
-            Console.ReadKey();
+            Console.ReadKey(); 
         }
 
-        // -----------------------
+        // ===========================================
         // Helper Methods
 
         // Displays courses and reads valid course ID
